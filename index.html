@@ -34,7 +34,7 @@
     function search() {
       const query = document.getElementById("searchInput").value.trim().toLowerCase();
       const resultDiv = document.getElementById("result");
-      const match = csvData.find(row =>
+        const match = csvData.find(row =>
         (row["Account"] || "").toLowerCase().includes(query) ||
         (row["Subscriber node"] || "").toLowerCase().includes(query) ||
         (row["ONT serial"] || "").toLowerCase().includes(query)

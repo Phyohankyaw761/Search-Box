@@ -2,84 +2,59 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Subscriber Search</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      max-width: 800px;
-      margin: auto;
-    }
-    input[type="text"] {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      margin-bottom: 20px;
-      font-size: 16px;
-    }
-    .result {
-      background: #f0f0f0;
-      padding: 10px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-    }
+    body { font-family: Arial; padding: 20px; }
+    input { padding: 8px; width: 300px; margin-bottom: 10px; }
+    button { padding: 8px 12px; }
+    .result { margin-top: 20px; padding: 10px; border: 1px solid #ccc; width: 600px; background: #f9f9f9; }
+    .result div { margin-bottom: 6px; }
   </style>
 </head>
 <body>
-
+  <h2>🔍 Subscriber Search</h2>
   <h2 style="text-align:center; margin-bottom: 10px;">Powered by Phyo Han Kyaw</h2>
-  <h1>Search Subscriber</h1>
   <input type="text" id="searchInput" placeholder="Search by Account, Subscriber Node, or ONT Serial" />
+  <button onclick="search()">Search</button>
 
-  <div id="result"></div>
+  <div id="result" class="result" style="display:none;"></div>
 
   <script>
-    let data = [];
+    let csvData = [];
 
-    // Load CSV
     Papa.parse("data.csv", {
       download: true,
       header: true,
       complete: function(results) {
-        data = results.data;
+        csvData = results.data;
       }
     });
 
-    document.getElementById("searchInput").addEventListener("input", function() {
-      const search = this.value.trim().toLowerCase();
-      if (search === "") {
-        document.getElementById("result").innerHTML = "";
-        return;
-      }
-
-      const results = data.filter(row => 
-        (row["Account"] || "").toLowerCase().includes(search) ||
-        (row["Subscriber node"] || "").toLowerCase().includes(search) ||
-        (row["ONT serial"] || "").toLowerCase().includes(search)
+    function search() {
+      const query = document.getElementById("searchInput").value.trim().toLowerCase();
+      const resultDiv = document.getElementById("result");
+      const match = csvData.find(row =>
+        (row["Account"] || "").toLowerCase().includes(query) ||
+        (row["Subscriber node"] || "").toLowerCase().includes(query) ||
+        (row["ONT serial"] || "").toLowerCase().includes(query)
       );
 
-      if (results.length > 0) {
-        let html = '';
-        results.forEach(result => {
-          html += `
-            <div class="result">
-              <p><strong>Account:</strong> ${result["Account"]}</p>
-              <p><strong>Subscriber Name:</strong> ${result["Subscriber name"]}</p>
-              <p><strong>Phone Number:</strong> ${result["Phone number"]}</p>
-              <p><strong>Address:</strong> ${result["Address"]}</p>
-              <p><strong>Subscriber Node:</strong> ${result["Subscriber node"]}</p>
-              <p><strong>Port on card:</strong> ${result["Port on card"]}</p>
-            </div>
-          `;
-        });
-        document.getElementById("result").innerHTML = html;
+      if (match) {
+        resultDiv.innerHTML = `
+          <div><strong>Account:</strong> ${match["Account"]}</div>
+          <div><strong>Subscriber Name:</strong> ${match["Subscriber name"]}</div>
+          <div><strong>Phone Number:</strong> ${match["Phone number"]}</div>
+          <div><strong>Address:</strong> ${match["Address"]}</div>
+          <div><strong>Subscriber Node:</strong> ${match["Subscriber node"]}</div>
+          <div><strong>Port on card:</strong> ${match["Port on card"]}</div>
+        `;
+        resultDiv.style.display = "block";
       } else {
-        document.getElementById("result").innerHTML = "<p>No results found.</p>";
+        resultDiv.innerHTML = "<em>No results found.</em>";
+        resultDiv.style.display = "block";
       }
-    });
+    }
   </script>
-
 </body>
 </html>

@@ -31,30 +31,36 @@
       }
     });
 
-    function search() {
-      const query = document.getElementById("searchInput").value.trim().toLowerCase();
-      const resultDiv = document.getElementById("result");
-        const match = csvData.find(row =>
-        (row["Account"] || "").toLowerCase().includes(query) ||
-        (row["Subscriber node"] || "").toLowerCase().includes(query) ||
-        (row["ONT serial"] || "").toLowerCase().includes(query)
-      );
+function search() {
+  const query = document.getElementById("searchInput").value.trim().toLowerCase();
+  const resultDiv = document.getElementById("result");
 
-      if (match) {
-        resultDiv.innerHTML = `
-          <div><strong>Account:</strong> ${match["Account"]}</div>
-          <div><strong>Subscriber Name:</strong> ${match["Subscriber name"]}</div>
-          <div><strong>Phone Number:</strong> ${match["Phone number"]}</div>
-          <div><strong>Address:</strong> ${match["Address"]}</div>
-          <div><strong>Subscriber Node:</strong> ${match["Subscriber node"]}</div>
-          <div><strong>Port on card:</strong> ${match["Port on card"]}</div>
-        `;
-        resultDiv.style.display = "block";
-      } else {
-        resultDiv.innerHTML = "<em>No results found.</em>";
-        resultDiv.style.display = "block";
-      }
-    }
+  const matches = csvData.filter(row =>
+    (row["Account"] || "").toLowerCase().includes(query) ||
+    (row["Subscriber node"] || "").toLowerCase().includes(query) ||
+    (row["ONT serial"] || "").toLowerCase().includes(query)
+  );
+
+  if (matches.length > 0) {
+    resultDiv.innerHTML = matches.map(match => `
+      <div style="margin-bottom: 15px;">
+        <div><strong>Account:</strong> ${match["Account"]}</div>
+        <div><strong>Subscriber Name:</strong> ${match["Subscriber name"]}</div>
+        <div><strong>Phone Number:</strong> ${match["Phone number"]}</div>
+        <div><strong>Address:</strong> ${match["Address"]}</div>
+        <div><strong>Subscriber Node:</strong> ${match["Subscriber node"]}</div>
+		<div><strong>ONU Serial :</strong> ${match["ONT serial"]}</div>
+        <div><strong>Port on card:</strong> ${match["Port on card"]}</div>
+        <hr/>
+      </div>
+    `).join('');
+    resultDiv.style.display = "block";
+  } else {
+    resultDiv.innerHTML = "<em>No results found.</em>";
+    resultDiv.style.display = "block";
+  }
+}
+
   </script>
 </body>
 </html>
